@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function VideoShuffleDisplay() {
   const [videoFiles, setVideoFiles] = useState<string[]>([]);
   const [displayedVideos, setDisplayedVideos] = useState<string[]>([]);
-  const numFrames = 3;
+  const numFrames = 6;
 
   const fetchVideos = useCallback(() => {
     fetch("/api/videos")
@@ -55,7 +55,7 @@ export default function VideoShuffleDisplay() {
 
     const interval = setInterval(() => {
       setDisplayedVideos(getRandomUniqueVideos(numFrames));
-    }, 3000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [videoFiles, getRandomUniqueVideos]);
@@ -67,7 +67,7 @@ export default function VideoShuffleDisplay() {
       {videoFiles.length === 0 ? (
         <div className="text-white text-xl">Loading videos...</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-7xl">
           {displayedVideos.map((videoName, index) => (
             <div
               key={index}
