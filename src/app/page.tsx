@@ -1,8 +1,12 @@
-import React from 'react'
-import GifShuffleDisplay from './components/gif-shuffle-display'
+/** @format */
+
+import React from "react";
+import VideoShuffleDisplay from "./components/video-shuffle-display";
 
 export default function page() {
   return (
-    <div><GifShuffleDisplay/></div>
-  )
+    <div>
+      <VideoShuffleDisplay />
+    </div>
+  );
 }
