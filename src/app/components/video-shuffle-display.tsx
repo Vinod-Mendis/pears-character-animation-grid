@@ -10,7 +10,7 @@ export default function VideoShuffleDisplay() {
   const [displayedVideos, setDisplayedVideos] = useState<string[]>([]);
   const numFrames = 3;
 
-  useEffect(() => {
+  const fetchVideos = useCallback(() => {
     fetch("/api/videos")
       .then((res) => res.json())
       .then((data) => {
@@ -19,6 +19,20 @@ export default function VideoShuffleDisplay() {
         setDisplayedVideos(shuffled.slice(0, numFrames));
       });
   }, []);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchVideos();
+  }, [fetchVideos]);
+
+  // Fetch videos every 1 minute
+  useEffect(() => {
+    const fetchInterval = setInterval(() => {
+      fetchVideos();
+    }, 60000); // 60000ms = 1 minute
+
+    return () => clearInterval(fetchInterval);
+  }, [fetchVideos]);
 
   const getRandomUniqueVideos = useCallback(
     (count: number): string[] => {
@@ -35,18 +49,21 @@ export default function VideoShuffleDisplay() {
     [videoFiles]
   );
 
+  // Shuffle displayed videos every 3 seconds
   useEffect(() => {
     if (videoFiles.length === 0) return;
 
     const interval = setInterval(() => {
       setDisplayedVideos(getRandomUniqueVideos(numFrames));
-    }, 5000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [videoFiles, getRandomUniqueVideos]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-8">
+    <div
+      className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-8"
+      style={{ backgroundImage: "url('/bg.png')" }}>
       {videoFiles.length === 0 ? (
         <div className="text-white text-xl">Loading videos...</div>
       ) : (
@@ -59,7 +76,7 @@ export default function VideoShuffleDisplay() {
                 <motion.video
                   key={videoName}
                   src={`/animations/${videoName}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-lg"
                   autoPlay
                   loop
                   muted
