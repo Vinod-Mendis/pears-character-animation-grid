@@ -13,7 +13,7 @@ interface Video {
 
 export default function Home() {
   const [directoryPath, setDirectoryPath] = useState(
-    "D:\\DEV - vinod\\FLYXTO\\pears-character-animation-grid\\public\\animations"
+    "/Users/forgelankapvtltd/Downloads/Grid Animation"
   );
   const [allVideos, setAllVideos] = useState<Video[]>([]);
   const [displayedVideos, setDisplayedVideos] = useState<Video[]>([]);
@@ -100,27 +100,43 @@ export default function Home() {
     startMonitoring();
   }, []);
 
+
+   const [videoLoadStates, setVideoLoadStates] = useState<Record<string, boolean>>({});
+
+  const handleVideoLoad = (path: string) => {
+    setVideoLoadStates((prev) => ({ ...prev, [path]: true }));
+  };
+
   return (
     <div
       className="h-screen flex flex-col overflow-hidden p-5 box-border bg-gray-900"
-      style={{ backgroundImage: "url('/bg.png')" }}>
+      style={{ backgroundImage: "url('/bg.png')" }}
+    >
       {allVideos.length > 0 && (
         <div className="flex-1 flex items-center justify-center overflow-hidden p-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-7xl mx-auto">
-            {displayedVideos.map((video) => (
-              <div
-                key={video.path}
-                className="bg-black rounded-lg overflow-hidden relative aspect-square w-full">
-                <video
-                  src={`/api/stream?path=${encodeURIComponent(video.path)}`}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ))}
+            {displayedVideos.map((video) => {
+              const isLoaded = videoLoadStates[video.path];
+
+              return (
+                <div
+                  key={video.path}
+                  className={`bg-transparent rounded-lg overflow-hidden relative aspect-square w-full transition-opacity duration-500 ${
+                    isLoaded ? "opacity-100 animate-zoom-in" : "opacity-0"
+                  }`}
+                >
+                  <video
+                    src={`/api/stream?path=${encodeURIComponent(video.path)}`}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    onCanPlay={() => handleVideoLoad(video.path)}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
